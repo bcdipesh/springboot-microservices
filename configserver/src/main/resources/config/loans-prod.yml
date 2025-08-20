@@ -1,0 +1,11 @@
+build:
+  version: "v2"
+
+loans:
+  message: "Welcome to EazyBank Loans production Microservice REST API"
+  contactDetails:
+    name: "Jane Doe"
+    email: "janedoe@gmail.com"
+  onCallSupport:
+    - "(777) 555-1234"
+    - "(777) 555-5678"

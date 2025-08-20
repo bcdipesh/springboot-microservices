@@ -1,0 +1,11 @@
+build:
+  version: "v1"
+
+loans:
+  message: "Welcome to EazyBank Loans QA Microservice REST API"
+  contactDetails:
+    name: "John Doe"
+    email: "johndoe@gmail.com"
+  onCallSupport:
+    - "(666) 555-1234"
+    - "(666) 555-5678"

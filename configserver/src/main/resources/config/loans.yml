@@ -1,0 +1,11 @@
+build:
+  version: "v3"
+
+loans:
+  message: "Welcome to EazyBank Loans Microservice REST API"
+  contactDetails:
+    name: "Dipesh B C"
+    email: "bcdipeshwork@gmail.com"
+  onCallSupport:
+    - "(555) 555-1234"
+    - "(555) 555-5678"
