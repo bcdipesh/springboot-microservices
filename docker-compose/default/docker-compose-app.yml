@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   accountsdb:
     container_name: accountsdb
@@ -34,9 +32,16 @@ services:
   accounts:
     image: dipeshbc/accounts:v5
     container_name: accounts-ms
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: accounts
       SPRING_DATASOURCE_URL: jdbc:mysql://accountsdb:3306/accountsdb
+      OTEL_SERVICE_NAME: accounts
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -46,9 +51,16 @@ services:
   loans:
     image: dipeshbc/loans:v5
     container_name: loans-ms
+    healthcheck:
+      test: "curl --fail --silent localhost:8090/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: loans
       SPRING_DATASOURCE_URL: jdbc:mysql://loansdb:3306/loansdb
+      OTEL_SERVICE_NAME: loans
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -58,9 +70,16 @@ services:
   cards:
     image: dipeshbc/cards:v5
     container_name: cards-ms
+    healthcheck:
+      test: "curl --fail --silent localhost:9000/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: cards
       SPRING_DATASOURCE_URL: jdbc:mysql://cardsdb:3306/cardsdb
+      OTEL_SERVICE_NAME: cards
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -81,9 +100,12 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: gatewayserver
+      SPRING_DATA_REDIS_CONNECT-TIMEOUT: 2s
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRINT_SECURITY_OAUTH2_RESOURCE_SERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
+      SPRING_DATA_REDIS_TIMEOUT: 1s
+      OTEL_SERVICE_NAME: gatewayserver
+      SPRING_SECURITY_OAUTH2_RESOURCE_SERVER_JWT_JWK_SET_URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     extends:
       file: common-config.yml
       service: microservice-eureka-config

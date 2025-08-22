@@ -20,7 +20,7 @@ services:
 #      - "7946"
 #      - "9095"
 #    volumes:
-#      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+#      - ../observability/loki/loki-config.yml:/etc/loki/config.yaml
 #    depends_on:
 #      - minio
 #    healthcheck:
@@ -41,7 +41,7 @@ services:
 #      - "7946"
 #      - "9095"
 #    volumes:
-#      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+#      - ../observability/loki/loki-config.yml:/etc/loki/config.yaml
 #    healthcheck:
 #      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
 #      interval: 10s
@@ -55,7 +55,7 @@ services:
 #  alloy:
 #    image: grafana/alloy:v1.5.1
 #    volumes:
-#      - ../observability/alloy/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
+#      - ../observability/alloy/alloy-local-config.yml:/etc/alloy/config.alloy:ro
 #      - /var/run/docker.sock:/var/run/docker.sock
 #    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
 #    ports:
@@ -112,7 +112,7 @@ services:
 #      - "3110:3100"
 #      - "4318:4318"
 #    volumes:
-#      - ../observability/tempo/tempo.yaml:/etc/tempo-config.yaml
+#      - ../observability/tempo/tempo.yml:/etc/tempo-config.yaml
 #    extends:
 #      file: common-config.yml
 #      service: network-deploy-service
@@ -146,7 +146,7 @@ services:
 #  backend:
 #    image: grafana/loki:3.1.2
 #    volumes:
-#      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+#      - ../observability/loki/loki-config.yml:/etc/loki/config.yaml
 #    ports:
 #      - "3100"
 #      - "7946"

@@ -1,20 +1,18 @@
 services:
   #########################################################################
-  # 🔗 Networking base service
-  # All services that extend this will join the shared eazybank-network
+  # 🔗 Base network membership
   #########################################################################
   network-deploy-service:
     networks:
       - eazybank-network
 
   #########################################################################
-  # 🗄️ Database base service
-  # Common config for MySQL microservice databases
+  # 🗄️ MySQL base for microservice DBs
   #########################################################################
   microservice-db-config:
     extends:
       service: network-deploy-service
-    image: mysql
+    image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: root
     healthcheck:
@@ -25,8 +23,7 @@ services:
       start_period: 10s
 
   #########################################################################
-  # ☕ Base config for Java microservices
-  # Adds OpenTelemetry agent, resource limits, and default OTEL settings
+  # ☕ Java microservice base (OpenTelemetry to Tempo)
   #########################################################################
   microservice-base-config:
     extends:
@@ -36,19 +33,18 @@ services:
         limits:
           memory: 700m
     environment:
-      # OpenTelemetry auto-instrumentation agent
+      # Auto-instrumentation
       JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
 
-      # Send telemetry to Tempo (running on Host A)
+      # Send traces to Tempo (Host A)
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
 
-      # Disable metrics/logs exporters inside agent (Prometheus + Loki handle these)
+      # Disable agent-side metrics/logs (Prometheus + Loki handle these)
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
 
   #########################################################################
-  # 📦 ConfigServer-aware microservices
-  # Ensures Spring Boot apps fetch config from ConfigServer
+  # 📦 ConfigServer-aware base (for Spring apps)
   #########################################################################
   microservice-configserver-config:
     extends:
@@ -63,8 +59,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: root
 
   #########################################################################
-  # 🧭 Eureka-aware microservices
-  # Ensures services register with Eureka for discovery
+  # 🧭 Eureka-aware base (adds discovery)
   #########################################################################
   microservice-eureka-config:
     extends:
@@ -74,3 +69,7 @@ services:
         condition: service_healthy
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
+
+networks:
+  eazybank-network:
+    external: true
