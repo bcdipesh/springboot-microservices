@@ -1,29 +1,51 @@
 global:
-  scrape_interval:     5s # Set the scrape interval to every 5 seconds.
-  evaluation_interval: 5s # Evaluate rules every 5 seconds.
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'accounts'
-    metrics_path: '/actuator/prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: [ 'accounts:8080' ]
-  - job_name: 'loans'
-    metrics_path: '/actuator/prometheus'
+      - targets: ["prometheus:9090"]
+
+  - job_name: "loki"
     static_configs:
-      - targets: [ 'loans:8090' ]
-  - job_name: 'cards'
-    metrics_path: '/actuator/prometheus'
+      - targets: ["gateway:3100"]
+
+  - job_name: "tempo"
     static_configs:
-      - targets: [ 'cards:9000' ]
-  - job_name: 'gatewayserver'
-    metrics_path: '/actuator/prometheus'
+      - targets: ["tempo:3100"]
+
+  - job_name: "redis"
     static_configs:
-      - targets: [ 'gatewayserver:8072' ]
-  - job_name: 'eurekaserver'
-    metrics_path: '/actuator/prometheus'
+      - targets: ["redis:6379"]
+
+  # Microservices (business side)
+  - job_name: "accounts"
+    metrics_path: "/actuator/prometheus"
     static_configs:
-      - targets: [ 'eurekaserver:8070' ]
-  - job_name: 'configserver'
-    metrics_path: '/actuator/prometheus'
+      - targets: ["accounts:8080"]
+
+  - job_name: "loans"
+    metrics_path: "/actuator/prometheus"
     static_configs:
-      - targets: [ 'configserver:8071' ]
+      - targets: ["loans:8090"]
+
+  - job_name: "cards"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["cards:9000"]
+
+  - job_name: "gatewayserver"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["gatewayserver:8072"]
+
+  - job_name: "eurekaserver"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["eurekaserver:8070"]
+
+  - job_name: "configserver"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["configserver:8071"]

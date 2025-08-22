@@ -4,7 +4,7 @@ spring:
   application:
     name: loans
   datasource:
-    url: jdbc:mysql://localhost:3307/loansdb
+    url: jdbc:mysql://192.168.1.164:3307/loansdb
     username: root
     password: root
   sql:

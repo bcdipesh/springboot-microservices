@@ -14,7 +14,7 @@ spring:
   data:
     redis:
       connect-timeout: 2s
-      host: localhost
+      host: 192.168.1.164
       port: 6379
       timeout: 1s
   otel:
@@ -24,7 +24,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
+          jwk-set-uri: "http://192.168.1.164:7080/realms/master/protocol/openid-connect/certs"
 
 info:
   app:

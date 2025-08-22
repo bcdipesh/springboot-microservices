@@ -1,0 +1,95 @@
+version: "3.9"
+
+services:
+  accountsdb:
+    container_name: accountsdb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: accountsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  loansdb:
+    container_name: loansdb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: loansdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  cardsdb:
+    container_name: cardsdb
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: cardsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+
+  accounts:
+    image: dipeshbc/accounts:v5
+    container_name: accounts-ms
+    environment:
+      SPRING_APPLICATION_NAME: accounts
+      SPRING_DATASOURCE_URL: jdbc:mysql://accountsdb:3306/accountsdb
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+    networks:
+      - eazybank-network
+
+  loans:
+    image: dipeshbc/loans:v5
+    container_name: loans-ms
+    environment:
+      SPRING_APPLICATION_NAME: loans
+      SPRING_DATASOURCE_URL: jdbc:mysql://loansdb:3306/loansdb
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+    networks:
+      - eazybank-network
+
+  cards:
+    image: dipeshbc/cards:v5
+    container_name: cards-ms
+    environment:
+      SPRING_APPLICATION_NAME: cards
+      SPRING_DATASOURCE_URL: jdbc:mysql://cardsdb:3306/cardsdb
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+    networks:
+      - eazybank-network
+
+  gatewayserver:
+    image: dipeshbc/gatewayserver:v5
+    container_name: gatewayserver-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      accounts:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: gatewayserver
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRINT_SECURITY_OAUTH2_RESOURCE_SERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+    networks:
+      - eazybank-network
+
+networks:
+  eazybank-network:
+    external: true

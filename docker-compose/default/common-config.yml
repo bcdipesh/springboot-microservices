@@ -1,21 +1,33 @@
 services:
+  #########################################################################
+  # 🔗 Networking base service
+  # All services that extend this will join the shared eazybank-network
+  #########################################################################
   network-deploy-service:
     networks:
       - eazybank-network
 
+  #########################################################################
+  # 🗄️ Database base service
+  # Common config for MySQL microservice databases
+  #########################################################################
   microservice-db-config:
     extends:
       service: network-deploy-service
     image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 10s
-    environment:
-      MYSQL_ROOT_PASSWORD: root
 
+  #########################################################################
+  # ☕ Base config for Java microservices
+  # Adds OpenTelemetry agent, resource limits, and default OTEL settings
+  #########################################################################
   microservice-base-config:
     extends:
       service: network-deploy-service
@@ -24,11 +36,20 @@ services:
         limits:
           memory: 700m
     environment:
+      # OpenTelemetry auto-instrumentation agent
       JAVA_TOOL_OPTIONS: "-javaagent:/app/libs/opentelemetry-javaagent-2.11.0.jar"
+
+      # Send telemetry to Tempo (running on Host A)
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
+
+      # Disable metrics/logs exporters inside agent (Prometheus + Loki handle these)
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
 
+  #########################################################################
+  # 📦 ConfigServer-aware microservices
+  # Ensures Spring Boot apps fetch config from ConfigServer
+  #########################################################################
   microservice-configserver-config:
     extends:
       service: microservice-base-config
@@ -41,6 +62,10 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
 
+  #########################################################################
+  # 🧭 Eureka-aware microservices
+  # Ensures services register with Eureka for discovery
+  #########################################################################
   microservice-eureka-config:
     extends:
       service: microservice-configserver-config
