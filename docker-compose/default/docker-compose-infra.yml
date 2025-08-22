@@ -156,11 +156,19 @@ services:
     container_name: configserver-ms
     ports:
       - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-base-config
     networks:
       - eazybank-network
+    environment:
+      OTEL_SERVICE_NAME: configserver
 
   eurekaserver:
     image: dipeshbc/eurekaserver:v5
